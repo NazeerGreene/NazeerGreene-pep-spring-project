@@ -27,6 +27,10 @@ public class SocialMediaController {
 
     @PostMapping("/register")
     public ResponseEntity<Account> registerUser(@RequestBody Account newAccount) {
+        if (newAccount == null || newAccount.getUsername() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Optional<Account> accountWithTakenUsername = accountService.findAccountByUsername(newAccount.getUsername());
 
         if (accountWithTakenUsername.isPresent()) {
@@ -39,18 +43,22 @@ public class SocialMediaController {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.of(registeredNewAccount);
+        return ResponseEntity.ok(registeredNewAccount.get());
     }
 
     @PostMapping("/login")
     public ResponseEntity<Account> loginUser(@RequestBody Account returningAccount) {
+        if (returningAccount == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        
         Optional<Account> verifiedAccount = accountService.verifyAccountExistsFor(returningAccount);
 
         if (verifiedAccount.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        
-        return ResponseEntity.of(verifiedAccount);
+
+        return ResponseEntity.ok(verifiedAccount.get());
     }
 
     public void createMessage() {

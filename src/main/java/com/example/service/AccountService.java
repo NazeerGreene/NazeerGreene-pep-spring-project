@@ -25,14 +25,14 @@ public class AccountService {
         // check service rules
         if (!isValidUsername(newAccount.getUsername()) ||
         !isValidPassword(newAccount.getPassword()) ||
-        usernameTaken(newAccount.getUsername())) {
+        !usernameAvailable(newAccount.getUsername())) {
             return Optional.empty();
         }
 
         // we can assume its safe to register by now - Id ignored if present
         Account registeredAccount = repository.save(newAccount);
 
-        return Optional.of(registeredAccount);
+        return Optional.ofNullable(registeredAccount);
     }
 
     public Optional<Account> verifyAccountExistsFor(Account account) {
@@ -47,21 +47,19 @@ public class AccountService {
         }
 
         // username and password should match data store
-        Account verifiedAccount = repository.findByUsernameAndPassword(account.getUsername(), account.getPassword());
+        Account foundAccount = repository.findByUsernameAndPassword(account.getUsername(), account.getPassword());
 
-        if (verifiedAccount.getUsername().equals(account.getUsername()) &&
-        verifiedAccount.getPassword().equals(account.getPassword())) {
-            return Optional.of(verifiedAccount);
-        }
-
-        return Optional.empty();
+        return Optional.ofNullable(foundAccount);
     }
 
     /*
      * Helper
      */
     public Optional<Account> findAccountByUsername(String username) {
-        return Optional.of(repository.findByUsername(username));
+        if (username == null) {
+            throw new IllegalStateException("username cannot be null");
+        }
+        return Optional.ofNullable(repository.findByUsername(username));
     }
 
     /*
@@ -85,8 +83,8 @@ public class AccountService {
     /*
      * Helper
      */
-    private boolean usernameTaken(String username) {
-        return repository.findByUsername(username) != null;
+    private boolean usernameAvailable(String username) {
+        return repository.findByUsername(username) == null;
     }
 
 }
