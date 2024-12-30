@@ -17,7 +17,7 @@ public class AccountService {
         this.repository = repository;
     }
 
-    public Optional<Account> registerNewUser(Account newAccount) {
+    public Optional<Account> registerNewAccountFor(Account newAccount) {
         if (newAccount == null) {
             throw new IllegalArgumentException("Account object expected, no null values.");
         }
@@ -35,7 +35,7 @@ public class AccountService {
         return Optional.of(registeredAccount);
     }
 
-    public Optional<Account> verifyExistingUser(Account account) {
+    public Optional<Account> verifyAccountExistsFor(Account account) {
         if (account == null) {
             throw new IllegalArgumentException("Account object expected, no null values");
         }
@@ -60,8 +60,8 @@ public class AccountService {
     /*
      * Helper
      */
-    public Account findAccountByUsername(String username) {
-        return repository.findByUsername(username);
+    public Optional<Account> findAccountByUsername(String username) {
+        return Optional.of(repository.findByUsername(username));
     }
 
     /*
