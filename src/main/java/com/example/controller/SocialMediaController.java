@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -98,31 +99,29 @@ public class SocialMediaController {
 
     @GetMapping("/messages/{messageId}")
     public ResponseEntity<Message> getMessageById(@PathVariable Integer messageId) {
-        Long id = Long.valueOf(messageId);
-        Optional<Message> message = messageService.getMessageById(id);
+        Optional<Message> message = messageService.getMessageById(messageId);
         if (message.isEmpty()) {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.ok(message.get());
     }
 
-    @PatchMapping("/message/{messageId}")
+    @PatchMapping("/messages/{messageId}")
     public ResponseEntity<Integer> updateMessage(@PathVariable Integer messageId, @RequestBody Message modifiedMessage) {
         modifiedMessage.setMessageId(messageId);
 
-        int updatedMessage = messageService.updateMessage(modifiedMessage);
+        int updatedRows = messageService.updateMessage(modifiedMessage);
 
-        if (updatedMessage < 1) {
+        if (updatedRows == 0) {
             return ResponseEntity.badRequest().build();
         }
         
-        return ResponseEntity.ok(1);
+        return ResponseEntity.ok(updatedRows);
     }
 
     @DeleteMapping("/messages/{messageId}")
     public ResponseEntity<Integer> deleteMessage(@PathVariable Integer messageId) {
-        Long id = Long.valueOf(messageId);
-        int deletedRows = messageService.deleteMessageById(id);
+        int deletedRows = messageService.deleteMessageById(messageId);
         if (deletedRows < 1) {
             return ResponseEntity.ok().build();
         }

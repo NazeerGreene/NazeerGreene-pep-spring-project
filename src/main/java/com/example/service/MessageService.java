@@ -40,7 +40,10 @@ public class MessageService {
         return (ArrayList<Message>) repository.findAll();
     }
 
-    public Optional<Message> getMessageById(Long id) {
+    public Optional<Message> getMessageById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
         return repository.findById(id);
     }
 
@@ -50,12 +53,13 @@ public class MessageService {
         }
 
         if (!isValidMessageText(modifiedMessage.getMessageText())) {
+            System.out.println("failed: " + modifiedMessage.getMessageText());
             return 0;
         }
 
         Integer id = modifiedMessage.getMessageId();
 
-        if (id == null || id.intValue() < 1) {
+        if (id == null || getMessageById(id).isEmpty()) {
             return 0;
         }
 
@@ -65,13 +69,19 @@ public class MessageService {
         Message updatedMessage = repository.save(modifiedMessage);
 
         if (updatedMessage.getMessageText().equals(modifiedMessage.getMessageText())) {
+            System.out.println("message: " + updatedMessage.getMessageText());
             return 1;
         }
+        System.out.println("message: " + updatedMessage.getMessageText());
 
         return 0;
     }
 
-    public int deleteMessageById(Long id) {
+    public int deleteMessageById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
+
         if (getMessageById(id).isPresent()) {
             repository.deleteById(id);
             return 1;
@@ -80,10 +90,13 @@ public class MessageService {
     }
 
     public List<Message> getMessagesFromUserId(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
         return (ArrayList<Message>) repository.findByPostedBy(id);
     }
 
     private boolean isValidMessageText(String message) {
-        return message != null && !message.isBlank() && message.length() < 256;
+        return message != null && !message.isBlank() && message.length() <= 255;
     }
 }

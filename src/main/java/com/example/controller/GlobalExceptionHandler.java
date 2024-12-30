@@ -9,9 +9,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
-        String message = ex.getMessage().toString();
+        //String message = ex.getMessage().toString();
 
-        System.out.println(message);
+        ex.printStackTrace();
 
         return ResponseEntity.badRequest().build();
     }
