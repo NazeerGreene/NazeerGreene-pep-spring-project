@@ -17,6 +17,11 @@ public class AccountService {
         this.repository = repository;
     }
 
+    /*
+     * Add a new account to the data store
+     * @param newAccount the new account to store
+     * @return Optional account if persisted to data store
+     */
     public Optional<Account> registerNewAccountFor(Account newAccount) {
         if (newAccount == null) {
             throw new IllegalArgumentException("Account object expected, no null values.");
@@ -35,6 +40,11 @@ public class AccountService {
         return Optional.ofNullable(registeredAccount);
     }
 
+    /*
+     * Returns account if in data store
+     * @param account the account to look for
+     * @return Optional the account if present
+     */
     public Optional<Account> verifyAccountExistsFor(Account account) {
         if (account == null) {
             throw new IllegalArgumentException("Account object expected, no null values");
@@ -53,13 +63,22 @@ public class AccountService {
     }
 
     /*
-     * Helper
+     * Returns account according to username
+     * @param username the username to look for
+     * @return Optional the accuont if present
      */
     public Optional<Account> findAccountByUsername(String username) {
         if (username == null) {
-            throw new IllegalStateException("username cannot be null");
+            throw new IllegalArgumentException("username cannot be null");
         }
         return Optional.ofNullable(repository.findByUsername(username));
+    }
+
+    public Optional<Account> findAccountById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
+        return repository.findById(id);
     }
 
     /*

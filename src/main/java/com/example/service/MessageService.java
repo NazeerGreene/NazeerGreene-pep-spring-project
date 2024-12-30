@@ -1,9 +1,15 @@
 package com.example.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.repository.MessageRepository;
+
+import com.example.entity.Message;
 
 @Service
 public class MessageService {
@@ -14,29 +20,70 @@ public class MessageService {
         this.repository = repository;
     }
 
-    public void createMessage() {
-        // text not blank
-        // text not over 255 char
-        // postedBy is real account
+    public Optional<Message> createMessage(Message newMessage) {
+        if (newMessage == null) {
+            throw new IllegalArgumentException("newMessage cannot be null");
+        }
 
-        // return Message(including ID)
+        if (!isValidMessageText(newMessage.getMessageText())) {
+            return Optional.empty();
+        }
+
+        // new message should be valid by this point
+        newMessage.setMessageId(null); // no id should be present
+        Message savedMessage = repository.save(newMessage);
+
+        return Optional.of(savedMessage);
     }
 
-    public void getAllMessages() {
-        // return all messages
+    public List<Message> getAllMessages() {
+        return (ArrayList<Message>) repository.findAll();
     }
 
-    public void getMessageById() {
-        // return message
+    public Optional<Message> getMessageById(Long id) {
+        return repository.findById(id);
     }
 
-    public void updateMessage() {
-        // message id already exists
-        // text not over 255 char
+    public int updateMessage(Message modifiedMessage) {
+        if (modifiedMessage == null) {
+            throw new IllegalArgumentException("modifiedMessage cannot be null");
+        }
 
+        if (!isValidMessageText(modifiedMessage.getMessageText())) {
+            return 0;
+        }
+
+        Integer id = modifiedMessage.getMessageId();
+
+        if (id == null || id.intValue() < 1) {
+            return 0;
+        }
+
+        // modified message should be valid by this point
+        modifiedMessage.setPostedBy(null);               // no need to modify
+        modifiedMessage.setTimePostedEpoch(null); // no need to modify
+        Message updatedMessage = repository.save(modifiedMessage);
+
+        if (updatedMessage.getMessageText().equals(modifiedMessage.getMessageText())) {
+            return 1;
+        }
+
+        return 0;
     }
 
-    public void deleteMessageById() {
-        // return number of rows deleted
+    public int deleteMessageById(Long id) {
+        if (getMessageById(id).isPresent()) {
+            repository.deleteById(id);
+            return 1;
+        }
+        return 0;
+    }
+
+    public List<Message> getMessagesFromUserId(Integer id) {
+        return (ArrayList<Message>) repository.findByPostedBy(id);
+    }
+
+    private boolean isValidMessageText(String message) {
+        return message != null && !message.isBlank() && message.length() < 256;
     }
 }
