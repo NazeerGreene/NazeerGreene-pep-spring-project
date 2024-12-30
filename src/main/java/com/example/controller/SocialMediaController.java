@@ -49,9 +49,8 @@ public class SocialMediaController {
         if (verifiedAccount.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        
         return ResponseEntity.of(verifiedAccount);
-
     }
 
     public void createMessage() {

@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.boot.SpringApplication.run;
 
+import org.apache.catalina.core.ApplicationContext;
+
 /**
  * This is a class that is used to run your application.
  *

@@ -79,7 +79,7 @@ public class AccountService {
      * @return boolean True if service rules are met
      */
     private boolean isValidUsername(String username) {
-        return username != null;
+        return username != null && username.length() > 0;
     }
 
     /*
