@@ -21,6 +21,9 @@ public class AccountService {
      * Add a new account to the data store
      * @param newAccount the new account to store
      * @return Optional account if persisted to data store
+     * 
+     * username cannot be blank.
+     * password cannot be blank, must be at least 4 characters
      */
     public Optional<Account> registerNewAccountFor(Account newAccount) {
         if (newAccount == null) {
@@ -35,15 +38,19 @@ public class AccountService {
         }
 
         // we can assume its safe to register by now - Id ignored if present
+        newAccount.setAccountId(null); // should not be present
         Account registeredAccount = repository.save(newAccount);
 
-        return Optional.ofNullable(registeredAccount);
+        return Optional.of(registeredAccount);
     }
 
     /*
      * Returns account if in data store
      * @param account the account to look for
      * @return Optional the account if present
+     * 
+     * username cannot be blank.
+     * password cannot be blank, must be at least 4 characters     
      */
     public Optional<Account> verifyAccountExistsFor(Account account) {
         if (account == null) {
@@ -63,9 +70,9 @@ public class AccountService {
     }
 
     /*
-     * Returns account according to username
+     * Find account according to username
      * @param username the username to look for
-     * @return Optional the accuont if present
+     * @return Optional the account if present
      */
     public Optional<Account> findAccountByUsername(String username) {
         if (username == null) {
@@ -74,6 +81,11 @@ public class AccountService {
         return Optional.ofNullable(repository.findByUsername(username));
     }
 
+    /*
+     * Find account according to id
+     * @param id the user id
+     * @return Optional the account if present
+     */
     public Optional<Account> findAccountById(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("id cannot be null");
